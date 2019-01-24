@@ -3,6 +3,8 @@ const _ = require('lodash');
 //const path = require('path');
 //const fs = require('fs');
 
+const alert = console.error
+
 function create(username, password, phone_number, message) {
 
     if (_.isEmpty(username)) {
@@ -37,11 +39,10 @@ function create(username, password, phone_number, message) {
                 return err;
             }
 
-            alert('res got ' + JSON.stringify(res.body));
+            alert('res got ' + JSON.stringify(res, null, 2));
             return res;
-        });
+        })
+        .catch(err=>alert(err));
 }
 
-module.exports = function () {    
-    return create;
-};
+module.exports = create;
