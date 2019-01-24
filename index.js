@@ -1,6 +1,8 @@
 const superagent = require('superagent');
 const _ = require('lodash');
 
+const alert = console.error;
+
 function create(username, password, phone_number, message) {
 
     if (_.isEmpty(username)) {
@@ -31,14 +33,14 @@ function create(username, password, phone_number, message) {
             // Do something
             if (err) 
             { 
-                console.log('err got ' + JSON.stringify(err));
+                console.log('err: ' + JSON.stringify(err));
                 return err;
             }
 
-            console.log('res got ' + JSON.stringify(res.body));
+            console.log('res: ' + JSON.stringify(res, null, 2));
             return res;
         })
-        .catch(err=>(err));
+        .catch(err=>console.error(err));
 }
 
 module.exports = create;
