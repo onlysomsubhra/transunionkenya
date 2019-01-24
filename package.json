@@ -1,0 +1,23 @@
+{
+  "name": "npm-onfonsmssend",
+  "version": "1.0.0",
+  "description": "onfon sms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "npm",
+    "onfon",
+    "onfonsms",
+    "onfon",
+    "sms",
+    "onfon-sms"
+  ],
+  "author": "Somsubhra Saha",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "superagent": "^4.1.0"
+  }
+}
