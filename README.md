@@ -1,1 +1,1 @@
-# This is ONFON SMS API for Kenya #
+ONFON sms gateway API for Kenya

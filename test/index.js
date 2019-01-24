@@ -1,8 +1,8 @@
 const onfon = require('../index');
 
-const username = 'lpesa';
-const password = 'Yb8Cw3gh';
-const phone_number = '+254720045224';
+const username = 'xxx';
+const password = 'xxx';
+const phone_number = '+254xxxxxxxxx';
 const message = 'npm test super agent';
 
 const url = 'https://onfon.co.ke:8080/smshttppush/index.php?wsdl';
