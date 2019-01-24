@@ -1,44 +1,64 @@
 const superagent = require('superagent');
 const _ = require('lodash');
+const xmlParse = require("xml-parse");
 
 const alert = console.error;
 
-function create(username, password, phone_number, message) {
+function create(url, headers, xml, timeout = 5000) {
 
-    if (_.isEmpty(username)) {
-        throw ("Invalid username");
+    if (_.isEmpty(url)) {
+        throw ("Invalid url");
     }
-    if (_.isEmpty(password)) {
-        throw ("Invalid password");
+    if (_.isEmpty(headers)) {
+        throw ("Invalid headers");
     }
-    if (_.isEmpty(phone_number)) {
-        throw ("Invalid phone number");
-    }
-    if (_.isEmpty(message)) {
-        throw ("Invalid message");
+    if (_.isEmpty(xml)) {
+        throw ("Invalid xml");
     }
 
-    const URL = 'https://onfon.co.ke:8080/smshttppush/index.php?wsdl';
-
-    var min=1000; 
-    var max=9999;  
-    var random = Math.floor(Math.random() * (+max - +min)) + +min; 
-    const data_obj = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bul="http://www.example.org/bulkSms/"><soapenv:Header/><soapenv:Body><bul:SMSSubmitReq><Username>'+username+'</Username><Password>'+password+'</Password><InterfaceID>bk</InterfaceID><SmsRecord><SmsId>'+random+'</SmsId><SmsRecipient>'+phone_number+'</SmsRecipient><SmsText>'+message+'</SmsText><SmsSenderId>L-PESA</SmsSenderId></SmsRecord><ReportEnabled>true</ReportEnabled></bul:SMSSubmitReq></soapenv:Body></soapenv:Envelope>';
-
+    let response = {};
     superagent
-        .post(URL)
-        .send(data_obj) // query string
-        .set('Content-Type', 'text/xml')
+        .post(url)
+        .send(xml) // query string
+        .timeout({
+            response: timeout,  // Wait 5 seconds for the server to start sending,
+            deadline: 60000, // but allow 1 minute for the file to finish loading.
+        })
+        .set(headers)
         .then((res, err) => {
             // Do something
             if (err) 
             { 
                 console.log('err: ' + JSON.stringify(err));
-                return err;
+                response = {
+                    type : 'error',
+                    response: err
+                };
+            } else {
+
+                const apiRes = res.text;
+            
+                var xmlDoc = new xmlParse.DOM(xmlParse.parse(apiRes));
+                var StatusRecord = xmlDoc.document.getElementsByTagName("StatusRecord")[0];
+                var StatusCode = StatusRecord.childNodes[0].innerXML; //StatusRecord.childNodes[0].getElementsByTagName("StatusCode")[0];
+                //console.log('res: ' + JSON.stringify(StatusRecord));
+                //console.log(JSON.stringify(StatusRecord.childNodes[0]));
+                //console.log(StatusCode);
+                if(StatusCode == 0)
+                {
+                    response = {
+                        type : 'success',
+                        response: response
+                    };
+                } else {
+                    response = {
+                        type : 'error',
+                        response: StatusCode
+                    };
+                }
             }
 
-            console.log('res: ' + JSON.stringify(res, null, 2));
-            return res;
+            return response;
         })
         .catch(err=>console.error(err));
 }
