@@ -19,5 +19,9 @@
   "dependencies": {
     "lodash": "^4.17.11",
     "superagent": "^4.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onlysomsubhra/onfonsms"
+  },
 }
