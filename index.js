@@ -1,7 +1,5 @@
 const superagent = require('superagent');
 const _ = require('lodash');
-//const path = require('path');
-//const fs = require('fs');
 
 function create(username, password, phone_number, message) {
 
@@ -33,15 +31,14 @@ function create(username, password, phone_number, message) {
             // Do something
             if (err) 
             { 
-                alert('err got ' + JSON.stringify(err));
+                console.log('err got ' + JSON.stringify(err));
                 return err;
             }
 
-            alert('res got ' + JSON.stringify(res.body));
+            console.log('res got ' + JSON.stringify(res.body));
             return res;
-        });
+        })
+        .catch(err=>(err));
 }
 
-module.exports = function () {    
-    return create;
-};
+module.exports = create;
