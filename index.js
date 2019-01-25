@@ -90,13 +90,13 @@ function create(obj, cb) {
             var StatusMessage = StatusRecord.childNodes[2].innerXML;
             //console.log('res: ' + JSON.stringify(StatusRecord, null, 2));
             if(StatusCode == 0) {
-                cb(null,{type : 'success', code : StatusCode})
+                cb(null,StatusCode)
             } else {
-                cb({type : 'error', code : StatusCode, message: StatusError},null)
+                cb(StatusCode,null)
             }
         })
         .catch(err=>{
-            cb({type : 'error', code : err, message: err},null)
+            cb(err,null)
         });
 }
 

@@ -42,17 +42,8 @@ onfon(obj, function(err,res) {
         return err;
     }
 
-    console.log('success',res);  
-    return res;
+    console.log('success',res);
 });
-```
-
-The expected output
-```javascript
-{
-    type : 'success', 
-    code : '0'
-}
 ```
 
 ### Usage with error
@@ -83,19 +74,9 @@ const obj = {
 onfon(obj, function(err,res) {
     if(err){
         console.log('error',err);
-        return err;
+        return;
     }
 
-    console.log('success',res);  
-    return res;
+    console.log('success',res);
 });
-```
-
-The expected output
-```javascript
-{
-    type : 'error', 
-    code : 'AUT200',
-    message : 'PREFIX_PROHIBITED'
-}
 ```
