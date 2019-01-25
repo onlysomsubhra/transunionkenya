@@ -1,10 +1,10 @@
 const onfon = require('../index');
 
-const Username = 'lpesa'; //'xxxx';
-const Password = 'Yb8Cw3gh'; //'xxxx';
-const PhoneNumber = '254720045224'; // '254xxxxxxxxx'
+const Username = 'xxxx';
+const Password = 'xxxx';
+const PhoneNumber = '254xxxxxxxxx';
 const Message = 'npm test sms';
-const SenderId = 'L-PESA';
+const SenderId = 'YYYY';
 
 //const min=1000; 
 //const max=9999;  
