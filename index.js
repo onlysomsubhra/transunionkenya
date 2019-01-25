@@ -2,21 +2,73 @@ const superagent = require('superagent');
 const _ = require('lodash');
 const xmlParse = require("xml-parse");
 
-const alert = console.error;
+const config = {
+    username: null, 
+    password: null, 
+    senderid: null, 
+    smsid: null, 
+    recipient: null, 
+    message: null, 
+    timeout: 5000
+}
 
-function create(url, headers, xml, timeout = 5000) {
+function create(obj, cb) {
 
-    if (_.isEmpty(url)) {
-        throw ("Invalid url");
+    const url = 'https://onfon.co.ke:8080/smshttppush/index.php?wsdl';
+
+    const headers = {
+        'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
+        'Content-Type': 'text/xml;charset=UTF-8',
+        'soapAction': ''
+    };
+    
+    obj = Object.assign(config,obj);
+    
+    let username = obj.username,
+        password = obj.password,
+        senderid = obj.senderid,
+        smsid = obj.senderid+obj.smsid,
+        recipient = obj.recipient,
+        message = obj.message,
+        timeout = obj.timeout;
+    
+    if (_.isEmpty(username)) {
+        throw ("Invalid username");
     }
-    if (_.isEmpty(headers)) {
-        throw ("Invalid headers");
+    if (_.isEmpty(password)) {
+        throw ("Invalid password");
     }
-    if (_.isEmpty(xml)) {
-        throw ("Invalid xml");
+    if (_.isEmpty(senderid)) {
+        throw ("Invalid sms sender id");
+    }
+    if (_.isEmpty(smsid)) {
+        throw ("Invalid sms id"+smsid);
+    }
+    if (_.isEmpty(recipient)) {
+        throw ("Invalid recipient no");
+    }
+    if (_.isEmpty(message)) {
+        throw ("Invalid message");
     }
 
-    let response = {};
+    const xml = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bul="http://www.example.org/bulkSms/">'+
+                '<soapenv:Header/>'+
+                '<soapenv:Body>'+
+                '<bul:SMSSubmitReq>'+
+                '<Username>'+username+'</Username>'+
+                '<Password>'+password+'</Password>'+
+                '<InterfaceID>bk</InterfaceID>'+
+                '<SmsRecord>'+
+                '<SmsId>'+smsid+'</SmsId>'+
+                '<SmsRecipient>'+recipient+'</SmsRecipient>'+
+                '<SmsText>'+message+'</SmsText>'+
+                '<SmsSenderId>'+senderid+'</SmsSenderId>'+
+                '</SmsRecord>'+
+                '<ReportEnabled>true</ReportEnabled>'+
+                '</bul:SMSSubmitReq>'+
+                '</soapenv:Body>'+
+                '</soapenv:Envelope>';
+
     superagent
         .post(url)
         .send(xml) // query string
@@ -25,42 +77,26 @@ function create(url, headers, xml, timeout = 5000) {
             deadline: 60000, // but allow 1 minute for the file to finish loading.
         })
         .set(headers)
-        .then((res, err) => {
+        .then((res) => {
             // Do something
-            if (err) 
-            { 
-                console.log('err: ' + JSON.stringify(err));
-                response = {
-                    type : 'error',
-                    response: err
-                };
+            const apiRes = res.text;
+        
+            var xmlDoc = new xmlParse.DOM(xmlParse.parse(apiRes));
+            var StatusRecord = xmlDoc.document.getElementsByTagName("StatusRecord")[0];
+            var StatusCode = StatusRecord.childNodes[0].innerXML;
+            //console.log('res: ' + JSON.stringify(StatusRecord));
+            //console.log(JSON.stringify(StatusRecord.childNodes[0]));
+            //console.log(StatusCode);
+            if(StatusCode == 0)
+            {
+                cb(null,StatusCode)
             } else {
-
-                const apiRes = res.text;
-            
-                var xmlDoc = new xmlParse.DOM(xmlParse.parse(apiRes));
-                var StatusRecord = xmlDoc.document.getElementsByTagName("StatusRecord")[0];
-                var StatusCode = StatusRecord.childNodes[0].innerXML; //StatusRecord.childNodes[0].getElementsByTagName("StatusCode")[0];
-                //console.log('res: ' + JSON.stringify(StatusRecord));
-                //console.log(JSON.stringify(StatusRecord.childNodes[0]));
-                //console.log(StatusCode);
-                if(StatusCode == 0)
-                {
-                    response = {
-                        type : 'success',
-                        response: response
-                    };
-                } else {
-                    response = {
-                        type : 'error',
-                        response: StatusCode
-                    };
-                }
+                cb(StatusCode,null)
             }
-
-            return response;
         })
-        .catch(err=>console.error(err));
+        .catch(err=>{
+            cb(err,null)
+        });
 }
 
 module.exports = create;
