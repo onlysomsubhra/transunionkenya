@@ -1,10 +1,10 @@
 const onfon = require('../index');
 
-const Username = 'lpesa';
-const Password = 'Yb8Cw3gh';
-const PhoneNumber = '254720045224';
+const Username = 'xxxx';
+const Password = 'xxxx';
+const PhoneNumber = '254xxxxxxxxx';
 const message = 'npm test super agent';
-const SenderId = 'L-PESA';
+const SenderId = 'YYYYY';
 
 const min=1000; 
 const max=9999;  
