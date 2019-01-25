@@ -1,4 +1,4 @@
-# ONFON sms gateway API for Kenya
+# ONFON SMS Gateway API for Kenya
 
 ## Install
 
