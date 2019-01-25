@@ -27,11 +27,13 @@ function create(obj, cb) {
     let username = obj.username,
         password = obj.password,
         senderid = obj.senderid,
-        smsid = obj.senderid+obj.smsid,
+        smsid = obj.smsid,
         recipient = obj.recipient,
         message = obj.message,
         timeout = obj.timeout;
     
+    //smsid = obj.senderid.toLower()+smsid;
+    //console.log(smsid)
     if (_.isEmpty(username)) {
         throw ("Invalid username");
     }
@@ -42,7 +44,7 @@ function create(obj, cb) {
         throw ("Invalid sms sender id");
     }
     if (_.isEmpty(smsid)) {
-        throw ("Invalid sms id"+smsid);
+        throw ("Invalid sms id");
     }
     if (_.isEmpty(recipient)) {
         throw ("Invalid recipient no");
@@ -84,18 +86,17 @@ function create(obj, cb) {
             var xmlDoc = new xmlParse.DOM(xmlParse.parse(apiRes));
             var StatusRecord = xmlDoc.document.getElementsByTagName("StatusRecord")[0];
             var StatusCode = StatusRecord.childNodes[0].innerXML;
-            //console.log('res: ' + JSON.stringify(StatusRecord));
-            //console.log(JSON.stringify(StatusRecord.childNodes[0]));
-            //console.log(StatusCode);
-            if(StatusCode == 0)
-            {
-                cb(null,StatusCode)
+            var StatusError = StatusRecord.childNodes[1].innerXML;
+            var StatusMessage = StatusRecord.childNodes[2].innerXML;
+            //console.log('res: ' + JSON.stringify(StatusRecord, null, 2));
+            if(StatusCode == 0) {
+                cb(null,{type : 'success', code : StatusCode})
             } else {
-                cb(StatusCode,null)
+                cb({type : 'error', code : StatusCode, message: StatusError},null)
             }
         })
         .catch(err=>{
-            cb(err,null)
+            cb({type : 'error', code : err, message: err},null)
         });
 }
 

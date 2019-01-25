@@ -2,23 +2,25 @@ const onfon = require('../index');
 
 const Username = 'xxxx';
 const Password = 'xxxx';
-const PhoneNumber = '254xxxxxxxxx';
-const message = 'npm test super agent';
-const SenderId = 'YYYYY';
+const PhoneNumber = '254xxxxxxxxx'; 
+const Message = 'npm test sms';
+const SenderId = 'YYYY';
 
-const min=1000; 
-const max=9999;  
-const SmsId = Math.floor(Math.random() * (+max - +min)) + +min; 
+//const min=1000; 
+//const max=9999;  
+//const SmsId = Math.floor(Math.random() * (+max - +min)) + +min; 
+const SmsId = Math.random().toString(36).replace('0.', '');
 
-onfon({
+const obj = {
     username: Username,
     password: Password,
     senderid: SenderId,
     smsid: SmsId,
     recipient: PhoneNumber,
-    message: message,
-    timeout: 10000
-}, function(err,res) {
+    message: Message
+};
+
+onfon(obj, function(err,res) {
     if(err){
         console.log('error',err);
         return err;
