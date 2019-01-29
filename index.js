@@ -136,15 +136,23 @@ function create(obj) {
             .then((res) => {
                 // Do something
                 const apiRes = res.text;
+                let scoreInfo = {};
                 //console.log(JSON.stringify(apiRes, null, 2))
                 var xmlDoc = new xmlParse.DOM(xmlParse.parse(apiRes));
-                let StatusCode;
+                let StatusCode, scoreOutput;
                 let innerRes = xmlDoc.document.getElementsByTagName("return")[0];
                 let xLen = xmlDoc.document.getElementsByTagName("return")[0].childNodes.length;
                 //console.log('2', JSON.stringify(innerRes, null, 2));
                 if(xLen > 1)
                 {
                     StatusCode = innerRes.childNodes[xLen-3].innerXML;
+                    scoreOutputLen = innerRes.childNodes[xLen-2].childNodes.length;
+                    if(scoreOutputLen > 0)
+                    {
+                        let grade = innerRes.childNodes[xLen-2].childNodes[0].innerXML;
+                        let credit_score = innerRes.childNodes[xLen-2].childNodes[1].innerXML;
+                        scoreInfo = {'grade' : grade, 'credit_score' : credit_score}
+                    }
                 }
                 else
                 {
@@ -152,7 +160,7 @@ function create(obj) {
                 }
 
                 if(StatusCode == 200) {
-                    response = {'type' : 'success', 'code' : StatusCode, 'message' : '', 'response' : apiRes};
+                    response = {'type' : 'success', 'code' : StatusCode, 'message' : scoreInfo, 'response' : apiRes};
                 } else {
                     response = {'type' : 'error', 'code' : StatusCode, 'message' : errorCode[StatusCode], 'response' : apiRes};
                 }
