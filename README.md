@@ -72,8 +72,9 @@ transunion(obj)
 { 
     type: 'success',
     code: '200',
-    message: '',
-    responce: 'xml response from transuion end' 
+    message: {'grade' : 'HH', 'credit_score' : '567'}',
+    input_request: 'xml request send by us',
+    output_responce: 'xml response from transuion end' 
 }
 ```
 
@@ -84,7 +85,8 @@ transunion(obj)
     type: 'error',
     code: '402',
     message: 'Required input missing',
-    responce: 'xml response from transuion end' 
+    input_request: 'xml request send by us',
+    output_responce: 'xml response from transuion end' 
 }
 ```
 

@@ -160,15 +160,15 @@ function create(obj) {
                 }
 
                 if(StatusCode == 200) {
-                    response = {'type' : 'success', 'code' : StatusCode, 'message' : scoreInfo, 'response' : apiRes};
+                    response = {'type' : 'success', 'code' : StatusCode, 'message' : scoreInfo, 'input_request' : xml, 'output_response' : apiRes};
                 } else {
-                    response = {'type' : 'error', 'code' : StatusCode, 'message' : errorCode[StatusCode], 'response' : apiRes};
+                    response = {'type' : 'error', 'code' : StatusCode, 'message' : errorCode[StatusCode], 'input_request' : xml, 'output_response' : apiRes};
                 }
 
                 resolve(response);
             })
             .catch(err=>{
-                response = {'type' : 'error', 'code' : err.status, 'message' : '', 'response' : err.response.text};
+                response = {'type' : 'error', 'code' : err.status, 'message' : '', 'input_request' : xml, 'output_response' : err.response.text};
                 reject(response);
             });
     });
