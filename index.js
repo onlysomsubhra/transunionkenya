@@ -73,7 +73,10 @@ function create(obj) {
     if (_.isEmpty(auth_password)) {
         throw ("Invalid auth password");
     }
-    if (_.isEmpty(code)) {
+    /*if (_.isEmpty(code)) {
+        throw ("Invalid code");
+    }*/
+    if (code == '' || code == null) {
         throw ("Invalid code");
     }
     if (_.isEmpty(infinity_code)) {
