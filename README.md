@@ -1,9 +1,9 @@
 # Transunion Product Event API
 
 ```
-### API: Transunion
-### Country : Kenya
-### Product : getProduct115
+API: Transunion
+Country: Kenya
+Product: getProduct115
 ```
 
 ## Install
