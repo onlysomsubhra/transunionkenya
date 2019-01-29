@@ -1,6 +1,6 @@
 {
   "name": "transunion",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "transunion `getProduct115` Product for kenya",
   "main": "index.js",
   "scripts": {
