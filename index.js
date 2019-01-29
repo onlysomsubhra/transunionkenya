@@ -3,33 +3,60 @@ const _ = require('lodash');
 const xmlParse = require("xml-parse");
 
 const config = {
-    username: null, 
-    password: null, 
-    senderid: null, 
-    smsid: null, 
-    recipient: null, 
-    message: null, 
+    username: null,
+    password: null,
+    auth_username: null,
+    auth_password: null,
+    code: null,
+    infinity_code: null,
+    name1: null,
+    name2: null,
+    name3: null,
+    national_id: null,
+    passport_no: null,
+    alien_id: null,
+    dob: null,
     timeout: 5000
 }
 
-function create(obj, cb) {
+function create(obj) {
 
-    const url = 'https://onfon.co.ke:8080/smshttppush/index.php?wsdl';
+    const errorCode = {
+                            101 : 'General Authentication Error',
+                            102 : 'Invalid Infinity Code',
+                            103 : 'Invalid Authentication Credentials',
+                            104 : 'Password expired',
+                            106 : 'Access Denied',
+                            109 : 'Account locked',
+                            200 : 'Product request processed successfully',
+                            202 : 'Credit Reference Number not found',
+                            203 : 'Multiple Credit Reference Number Found',
+                            204 : 'Invalid report reason',
+                            209 : 'Invalid Sector ID',
+                            301 : 'Insufficient Credit',
+                            402 : 'Required input missing',
+                            403 : 'General Application Error',
+                            404 : 'Service temporarily unavailable',
+                            408 : 'Unable to verify National ID' 
+                        };
 
-    const headers = {
-        'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
-        'Content-Type': 'text/xml;charset=UTF-8',
-        'soapAction': ''
-    };
+    const url = 'https://secure3.transunionafrica.com/crbws/ke?wsdl';    
     
     obj = Object.assign(config,obj);
     
     let username = obj.username,
         password = obj.password,
-        senderid = obj.senderid,
-        smsid = obj.smsid,
-        recipient = obj.recipient,
-        message = obj.message,
+        auth_username = obj.auth_username,
+        auth_password = obj.auth_password,
+        code = obj.code,
+        infinity_code = obj.infinity_code,
+        name1 = obj.name1,
+        name2 = obj.name2,
+        name3 = obj.name3,
+        national_id = obj.national_id,
+        passport_no = obj.passport_no,
+        alien_id = obj.alien_id,
+        dob = obj.dob,
         timeout = obj.timeout;
     
     //smsid = obj.senderid.toLower()+smsid;
@@ -40,64 +67,103 @@ function create(obj, cb) {
     if (_.isEmpty(password)) {
         throw ("Invalid password");
     }
-    if (_.isEmpty(senderid)) {
-        throw ("Invalid sms sender id");
+    if (_.isEmpty(auth_username)) {
+        throw ("Invalid auth username");
     }
-    if (_.isEmpty(smsid)) {
-        throw ("Invalid sms id");
+    if (_.isEmpty(auth_password)) {
+        throw ("Invalid auth password");
     }
-    if (_.isEmpty(recipient)) {
-        throw ("Invalid recipient no");
+    if (_.isEmpty(code)) {
+        throw ("Invalid code");
     }
-    if (_.isEmpty(message)) {
-        throw ("Invalid message");
+    if (_.isEmpty(infinity_code)) {
+        throw ("Invalid infinity code");
+    }
+    if (_.isEmpty(name1)) {
+        throw ("Invalid name1");
+    }
+    if (_.isEmpty(name2)) {
+        throw ("Invalid name2");
     }
 
-    const xml = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bul="http://www.example.org/bulkSms/">'+
-                '<soapenv:Header/>'+
+    if(national_id.length == 0 && passport_no.length == 0 && alien_id.length == 0)
+    {
+        throw ("Invalid national id or password no or alien id");
+    }
+
+    const headers = {
+        'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
+        'Content-Type': 'text/xml;charset=UTF-8',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+        'soapAction': 'getProduct115'
+    };
+
+    const xml = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:hs="http://ws.crbws.transunion.ke.co/">'+
                 '<soapenv:Body>'+
-                '<bul:SMSSubmitReq>'+
-                '<Username>'+username+'</Username>'+
-                '<Password>'+password+'</Password>'+
-                '<InterfaceID>bk</InterfaceID>'+
-                '<SmsRecord>'+
-                '<SmsId>'+smsid+'</SmsId>'+
-                '<SmsRecipient>'+recipient+'</SmsRecipient>'+
-                '<SmsText>'+message+'</SmsText>'+
-                '<SmsSenderId>'+senderid+'</SmsSenderId>'+
-                '</SmsRecord>'+
-                '<ReportEnabled>true</ReportEnabled>'+
-                '</bul:SMSSubmitReq>'+
+                '<hs:getProduct115>'+
+                '<username>'+username+'</username>'+
+                '<password>'+password+'</password>'+
+                '<code>'+code+'</code>'+
+                '<infinityCode>'+infinity_code+'</infinityCode>'+
+                '<name1>' + name1 + '</name1>'+
+                '<name2>' + name2 + '</name2>'+
+                '<name3>' + name3 + '</name3>'+
+                '<nationalID>' + national_id + '</nationalID>'+
+                '<passportNo>' + passport_no + '</passportNo>'+
+                '<alienID>' + alien_id + '</alienID>'+
+                '<dateOfBirth>' + dob + '</dateOfBirth>'+
+                '<physicalAddress></physicalAddress>'+
+                '<physicalTown></physicalTown>'+
+                '<physicalCountry></physicalCountry>'+
+                '<reportSector>2</reportSector>'+
+                '<reportReason>2</reportReason>'+
+                '</hs:getProduct115>'+
                 '</soapenv:Body>'+
                 '</soapenv:Envelope>';
 
-    superagent
-        .post(url)
-        .send(xml) // query string
-        .timeout({
-            response: timeout,  // Wait 5 seconds for the server to start sending,
-            deadline: 60000, // but allow 1 minute for the file to finish loading.
-        })
-        .set(headers)
-        .then((res) => {
-            // Do something
-            const apiRes = res.text;
-        
-            var xmlDoc = new xmlParse.DOM(xmlParse.parse(apiRes));
-            var StatusRecord = xmlDoc.document.getElementsByTagName("StatusRecord")[0];
-            var StatusCode = StatusRecord.childNodes[0].innerXML;
-            var StatusError = StatusRecord.childNodes[1].innerXML;
-            var StatusMessage = StatusRecord.childNodes[2].innerXML;
-            //console.log('res: ' + JSON.stringify(StatusRecord, null, 2));
-            if(StatusCode == 0) {
-                cb(null,StatusCode)
-            } else {
-                cb(StatusCode,null)
-            }
-        })
-        .catch(err=>{
-            cb(err,null)
-        });
+    let response = {};
+    return new Promise((resolve, reject) => {
+        superagent
+            .post(url)
+            .send(xml) // query string
+            .timeout({
+                response: timeout,  // Wait 5 seconds for the server to start sending,
+                deadline: 60000, // but allow 1 minute for the file to finish loading.
+            })
+            .auth(auth_username, auth_password)
+            .set(headers)
+            .then((res) => {
+                // Do something
+                const apiRes = res.text;
+                //console.log(JSON.stringify(apiRes, null, 2))
+                var xmlDoc = new xmlParse.DOM(xmlParse.parse(apiRes));
+                let StatusCode;
+                let innerRes = xmlDoc.document.getElementsByTagName("return")[0];
+                let xLen = xmlDoc.document.getElementsByTagName("return")[0].childNodes.length;
+                //console.log('2', JSON.stringify(innerRes, null, 2));
+                if(xLen > 1)
+                {
+                    StatusCode = innerRes.childNodes[xLen-3].innerXML;
+                }
+                else
+                {
+                    StatusCode = innerRes.childNodes[0].innerXML;
+                }
+
+                if(StatusCode == 200) {
+                    response = {'type' : 'success', 'code' : StatusCode, 'message' : '', 'response' : apiRes};
+                } else {
+                    response = {'type' : 'error', 'code' : StatusCode, 'message' : errorCode[StatusCode], 'response' : apiRes};
+                }
+
+                resolve(response);
+            })
+            .catch(err=>{
+                response = {'type' : 'error', 'code' : err.status, 'message' : '', 'response' : err.response.text};
+                reject(response);
+            });
+    });
 }
 
 module.exports = create;

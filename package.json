@@ -1,18 +1,18 @@
 {
-  "name": "onfonsms",
+  "name": "transunion",
   "version": "1.0.6",
-  "description": "onfon sms",
+  "description": "transunion `getProduct115` Product for kenya",
   "main": "index.js",
   "scripts": {
     "test": "node --trace-warnings  ./test/index.js"
   },
   "keywords": [
     "npm",
-    "onfon",
-    "onfonsms",
-    "onfon",
-    "sms",
-    "onfon-sms"
+    "transunion",
+    "transunionkenya",
+    "credit score",
+    "grade",
+    "transunion-sms"
   ],
   "author": "Somsubhra Saha",
   "license": "ISC",
@@ -23,6 +23,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/onlysomsubhra/onfonsms"
+    "url": "git+https://github.com/onlysomsubhra/transunionkenya"
   }
 }
