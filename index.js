@@ -22,23 +22,23 @@ const config = {
 function create(obj) {
 
     const errorCode = {
-                            101 : 'General Authentication Error',
-                            102 : 'Invalid Infinity Code',
-                            103 : 'Invalid Authentication Credentials',
-                            104 : 'Password expired',
-                            106 : 'Access Denied',
-                            109 : 'Account locked',
-                            200 : 'Product request processed successfully',
-                            202 : 'Credit Reference Number not found',
-                            203 : 'Multiple Credit Reference Number Found',
-                            204 : 'Invalid report reason',
-                            209 : 'Invalid Sector ID',
-                            301 : 'Insufficient Credit',
-                            402 : 'Required input missing',
-                            403 : 'General Application Error',
-                            404 : 'Service temporarily unavailable',
-                            408 : 'Unable to verify National ID' 
-                        };
+        101 : 'General Authentication Error',
+        102 : 'Invalid Infinity Code',
+        103 : 'Invalid Authentication Credentials',
+        104 : 'Password expired',
+        106 : 'Access Denied',
+        109 : 'Account locked',
+        200 : 'Product request processed successfully',
+        202 : 'Credit Reference Number not found',
+        203 : 'Multiple Credit Reference Number Found',
+        204 : 'Invalid report reason',
+        209 : 'Invalid Sector ID',
+        301 : 'Insufficient Credit',
+        402 : 'Required input missing',
+        403 : 'General Application Error',
+        404 : 'Service temporarily unavailable',
+        408 : 'Unable to verify National ID'
+    };
 
     const url = 'https://secure3.transunionafrica.com/crbws/ke?wsdl';    
     
@@ -122,18 +122,22 @@ function create(obj) {
                 '</soapenv:Body>'+
                 '</soapenv:Envelope>';
 
-    let response = {};
+    //let response = {};
     return new Promise((resolve, reject) => {
         superagent
-            .post(url)
-            .send(xml) // query string
-            .timeout({
-                response: timeout,  // Wait 5 seconds for the server to start sending,
-                deadline: 60000, // but allow 1 minute for the file to finish loading.
-            })
-            .auth(auth_username, auth_password)
-            .set(headers)
-            .then((res) => {
+        .post(url)
+        .send(xml) // query string
+        .timeout({
+            response: timeout,  // Wait 5 seconds for the server to start sending,
+            deadline: 60000, // but allow 1 minute for the file to finish loading.
+        })
+        .auth(auth_username, auth_password)
+        .set(headers)
+        .then((res) => {
+
+            if(res.text)
+            {
+                //console.log('res', res.text);
                 // Do something
                 const apiRes = res.text;
                 let scoreInfo = {};
@@ -143,34 +147,60 @@ function create(obj) {
                 let innerRes = xmlDoc.document.getElementsByTagName("return")[0];
                 let xLen = xmlDoc.document.getElementsByTagName("return")[0].childNodes.length;
                 //console.log('2', JSON.stringify(innerRes, null, 2));
-                if(xLen > 1)
-                {
-                    StatusCode = innerRes.childNodes[xLen-3].innerXML;
-                    scoreOutputLen = innerRes.childNodes[xLen-2].childNodes.length;
-                    if(scoreOutputLen > 0)
-                    {
-                        let grade = innerRes.childNodes[xLen-2].childNodes[0].innerXML;
-                        let credit_score = innerRes.childNodes[xLen-2].childNodes[1].innerXML;
-                        scoreInfo = {'grade' : grade, 'credit_score' : credit_score}
+                if (xLen > 1) {
+                    StatusCode = innerRes.childNodes[xLen - 3].innerXML;
+                    scoreOutputLen = innerRes.childNodes[xLen - 2].childNodes.length;
+                    if (scoreOutputLen > 0) {
+
+                        let grade = innerRes.childNodes[xLen - 2].childNodes[0].innerXML;
+                        let credit_score = innerRes.childNodes[xLen - 2].childNodes[1].innerXML;
+                        let probability = innerRes.childNodes[xLen - 2].childNodes[2].innerXML;
+                        let loan_history_1 = innerRes.childNodes[xLen - 2].childNodes[3].innerXML;
+                        let loan_history_2 = innerRes.childNodes[xLen - 2].childNodes[4].innerXML;
+                        let loan_history_3 = innerRes.childNodes[xLen - 2].childNodes[5].innerXML;
+                        let loan_history_4 = innerRes.childNodes[xLen - 2].childNodes[6].innerXML;
+
+                        scoreInfo = {
+                            'grade': grade,
+                            'credit_score': credit_score,
+                            'probability': probability,
+                            'loan_history_1': loan_history_1,
+                            'loan_history_2': loan_history_2,
+                            'loan_history_3': loan_history_3,
+                            'loan_history_4': loan_history_4
+                        }
                     }
-                }
-                else
-                {
+                } else {
                     StatusCode = innerRes.childNodes[0].innerXML;
                 }
 
-                if(StatusCode == 200) {
-                    response = {'type' : 'success', 'code' : StatusCode, 'message' : scoreInfo, 'input_request' : xml, 'output_response' : apiRes};
+                if (StatusCode == 200) {
+                    response = {
+                        'type': 'success',
+                        'code': StatusCode,
+                        'message': scoreInfo,
+                        'input_request': xml,
+                        'output_response': apiRes
+                    };
                 } else {
-                    response = {'type' : 'error', 'code' : StatusCode, 'message' : errorCode[StatusCode], 'input_request' : xml, 'output_response' : apiRes};
+                    response = {
+                        'type': 'error',
+                        'code': StatusCode,
+                        'message': errorCode[StatusCode],
+                        'input_request': xml,
+                        'output_response': apiRes
+                    };
                 }
+            } else {
+                response = {'type' : 'error', 'code': '', 'message' : 'No text found', 'input_request' : xml, 'output_response' : res};
+            }
 
-                resolve(response);
-            })
-            .catch(err=>{
-                response = {'type' : 'error', 'code' : err.status, 'message' : '', 'input_request' : xml, 'output_response' : err.response.text};
-                reject(response);
-            });
+            resolve(response);
+        })
+        .catch(err=>{
+            //response = {'type' : 'error', 'code' : , 'message' : '', 'input_request' : xml, 'output_response' : err.response.text};
+            reject(err);
+        });
     });
 }
 

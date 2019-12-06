@@ -1,18 +1,18 @@
 const transunion = require('../index');
+//const xmlParse = require("xml-parse");
 
 /* Dummy Data */
-const Username = 'XXXX';
-const Password = 'xxxx';
-const AUTH_Username = "yyyy"; 
-const AUTH_Password = "zzzz"; 
+const Username = "XXXX";
+const Password = "xxxx";
+const AUTH_Username = "yyyy";
+const AUTH_Password = "zzzz";
 const Code = '1111';
 const InfinityCode = 'aaaa';
-
 
 const Name1 = 'Test Name 1'; // Mandatory //
 const Name2 = 'Test Name 2'; // Mandatory //
 const Name3 = '';
-const NationalId = 'Nationa Id'; // Mandatory, Have Any one //
+const NationalId = 'National Id'; // Mandatory, Have Any one //
 const PassportNo = ''; // Mandatory, Have Any one //
 const AlienID = ''; // Mandatory, Have Any one //
 const DOB = '';
